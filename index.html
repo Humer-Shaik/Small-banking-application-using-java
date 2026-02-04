@@ -1,84 +1,776 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Small Banking Application</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SecureBank Server Portal</title>
+
+  <style>
+    :root{
+      --bg: #0b1220;
+      --bg2:#0a1020;
+      --card: rgba(255,255,255,0.06);
+      --card2: rgba(255,255,255,0.08);
+      --border: rgba(255,255,255,0.12);
+      --text: #eef2ff;
+      --muted: rgba(238,242,255,0.65);
+
+      --primary: #4f8cff;
+      --primary2:#2e6bff;
+
+      --success: #2ee59d;
+      --danger: #ff4d4d;
+      --warn:#ffd24a;
+
+      --shadow: 0 18px 60px rgba(0,0,0,0.55);
+      --radius: 18px;
+      --radius2: 14px;
+
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      --sans: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+    }
+
+    *{ box-sizing:border-box; margin:0; padding:0; font-family: var(--sans); }
+    body{
+      min-height:100vh;
+      color:var(--text);
+      background:
+        radial-gradient(1000px 600px at 10% 10%, rgba(79,140,255,0.22), transparent 55%),
+        radial-gradient(900px 520px at 90% 25%, rgba(46,229,157,0.18), transparent 55%),
+        radial-gradient(700px 500px at 50% 100%, rgba(255,210,74,0.12), transparent 55%),
+        linear-gradient(180deg, var(--bg), var(--bg2));
+      display:flex;
+      justify-content:center;
+      align-items:flex-start;
+      padding:28px;
+    }
+
+    .app{
+      width:min(1180px, 100%);
+      display:flex;
+      flex-direction:column;
+      gap:18px;
+    }
+
+    /* TOP NAVBAR */
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:16px 18px;
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(255,255,255,0.09), rgba(255,255,255,0.06));
+      border:1px solid var(--border);
+      box-shadow: var(--shadow);
+      position:sticky;
+      top:14px;
+      z-index:5;
+      backdrop-filter: blur(14px);
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+
+    .logo{
+      width:44px;
+      height:44px;
+      border-radius:14px;
+      display:grid;
+      place-items:center;
+      background:
+        radial-gradient(24px 24px at 30% 25%, rgba(255,255,255,0.45), transparent 55%),
+        linear-gradient(145deg, rgba(79,140,255,0.95), rgba(46,229,157,0.55));
+      box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+      border:1px solid rgba(255,255,255,0.18);
+    }
+
+    .logo svg{
+      width:22px; height:22px; fill:#071021;
+      opacity:0.95;
+    }
+
+    .brandText h1{
+      font-size:18px;
+      font-weight:900;
+      letter-spacing:0.3px;
+      line-height:1.1;
+    }
+    .brandText p{
+      margin-top:2px;
+      font-size:12px;
+      color:var(--muted);
+    }
+
+    .topRight{
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+
+    .chip{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      font-size:12px;
+      padding:8px 12px;
+      border-radius:999px;
+      background: rgba(79,140,255,0.12);
+      border:1px solid rgba(79,140,255,0.24);
+      color:#cfe0ff;
+      font-weight:700;
+      white-space:nowrap;
+    }
+    .dot{
+      width:9px; height:9px; border-radius:999px;
+      background: var(--success);
+      box-shadow: 0 0 0 4px rgba(46,229,157,0.12);
+    }
+
+    .layout{
+      display:grid;
+      grid-template-columns: 1fr 340px;
+      gap:18px;
+    }
+
+    .card{
+      padding:22px;
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.05));
+      border:1px solid var(--border);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+    }
+
+    /* LEFT PANEL HEADER */
+    .panelHeader{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:12px;
+      padding-bottom:16px;
+      border-bottom:1px solid rgba(255,255,255,0.09);
+      margin-bottom:16px;
+    }
+    .panelHeader h2{
+      font-size:18px;
+      font-weight:900;
+      letter-spacing:0.2px;
+    }
+    .panelHeader p{
+      margin-top:5px;
+      font-size:13px;
+      color:var(--muted);
+      line-height:1.45;
+    }
+
+    .badge{
+      font-size:12px;
+      padding:8px 12px;
+      border-radius:999px;
+      background: rgba(46,229,157,0.12);
+      border:1px solid rgba(46,229,157,0.22);
+      color:#baffea;
+      font-weight:800;
+      white-space:nowrap;
+    }
+
+    /* FORMS */
+    label{
+      display:block;
+      font-size:13px;
+      font-weight:800;
+      color:rgba(238,242,255,0.92);
+      margin:12px 0 8px;
+    }
+
+    input{
+      width:100%;
+      padding:12px 14px;
+      border-radius: 12px;
+      border:1px solid rgba(255,255,255,0.12);
+      background: rgba(0,0,0,0.22);
+      color:var(--text);
+      outline:none;
+      font-size:15px;
+      transition: 0.2s ease;
+    }
+    input:focus{
+      border-color: rgba(79,140,255,0.7);
+      box-shadow: 0 0 0 4px rgba(79,140,255,0.18);
+    }
+    input:disabled{
+      background: rgba(255,255,255,0.06);
+      color: rgba(238,242,255,0.75);
+    }
+
+    .mono{ font-family: var(--mono); }
+
+    /* BUTTONS */
+    .row{
+      display:flex;
+      gap:12px;
+      margin-top:18px;
+    }
+    .row .btn{ flex:1; }
+
+    .btn{
+      padding:12px 14px;
+      border-radius: 12px;
+      cursor:pointer;
+      border:1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.08);
+      color: var(--text);
+      font-weight:900;
+      font-size:14px;
+      transition: 0.16s ease;
+      user-select:none;
+    }
+    .btn:hover{ transform: translateY(-1px); background: rgba(255,255,255,0.11); }
+    .btn:active{ transform: translateY(0px) scale(0.99); }
+
+    .primary{
+      background: linear-gradient(180deg, rgba(79,140,255,1), rgba(46,107,255,1));
+      border-color: rgba(79,140,255,0.8);
+      color: white;
+      box-shadow: 0 12px 30px rgba(46,107,255,0.24);
+    }
+    .primary:hover{
+      background: linear-gradient(180deg, rgba(79,140,255,1), rgba(34,93,255,1));
+    }
+
+    .danger{
+      background: linear-gradient(180deg, rgba(255,77,77,1), rgba(218,40,40,1));
+      border-color: rgba(255,77,77,0.75);
+      color: white;
+      box-shadow: 0 12px 30px rgba(255,77,77,0.16);
+    }
+
+    .ghost{
+      background: rgba(255,255,255,0.05);
+      border-color: rgba(255,255,255,0.14);
+      color: rgba(238,242,255,0.9);
+    }
+
+    /* STATUS / INFO BOX */
+    .infoBox{
+      margin-top:14px;
+      padding:14px;
+      border-radius: var(--radius2);
+      background: rgba(0,0,0,0.22);
+      border:1px solid rgba(255,255,255,0.12);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+    }
+    .muted{ color: var(--muted); font-size:13px; font-weight:700; }
+
+    .msg{
+      margin-top:12px;
+      min-height:20px;
+      font-size:13px;
+      color:var(--muted);
+      line-height:1.4;
+    }
+    .msg.good{ color: var(--success); font-weight:900; }
+    .msg.bad{ color: var(--danger); font-weight:900; }
+
+    /* PAGES / ANIMATIONS */
+    .pages{ position:relative; overflow:hidden; min-height:440px; }
+    .page{
+      position:absolute;
+      inset:0;
+      opacity:0;
+      transform: translateY(10px);
+      pointer-events:none;
+      transition: 0.28s ease;
+    }
+    .page.active{
+      opacity:1;
+      transform: translateY(0);
+      pointer-events:auto;
+    }
+
+    .screenTitle{
+      font-size:18px;
+      font-weight:950;
+      letter-spacing:0.2px;
+      margin-bottom:6px;
+    }
+    .screenHint{
+      font-size:13px;
+      color:var(--muted);
+      margin-bottom:14px;
+      line-height:1.55;
+    }
+
+    /* DASHBOARD */
+    .dashboardActions{
+      display:grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap:10px;
+      margin-top:14px;
+    }
+
+    .screen{
+      margin-top:14px;
+      padding:14px;
+      border-radius: var(--radius2);
+      background: rgba(0,0,0,0.22);
+      border:1px solid rgba(255,255,255,0.12);
+      height:200px;
+      overflow:auto;
+      white-space:pre-wrap;
+      font-size:13px;
+      line-height:1.55;
+      font-family: var(--mono);
+    }
+
+    /* SIDEBAR */
+    .sidebar{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+
+    .stepsTitle{
+      font-size:12px;
+      text-transform:uppercase;
+      letter-spacing:0.14em;
+      color: rgba(238,242,255,0.58);
+      font-weight:900;
+      margin-bottom:6px;
+    }
+
+    .step{
+      padding:14px;
+      border-radius: var(--radius2);
+      border:1px solid rgba(255,255,255,0.12);
+      background: rgba(0,0,0,0.18);
+      transition: 0.2s ease;
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+    .step.active{
+      border-color: rgba(79,140,255,0.55);
+      box-shadow: 0 0 0 4px rgba(79,140,255,0.10);
+      background: rgba(79,140,255,0.08);
+    }
+    .step .icon{
+      width:36px; height:36px;
+      border-radius: 12px;
+      display:grid; place-items:center;
+      background: rgba(255,255,255,0.08);
+      border:1px solid rgba(255,255,255,0.12);
+    }
+    .step.active .icon{
+      background: rgba(79,140,255,0.25);
+      border-color: rgba(79,140,255,0.45);
+    }
+    .step svg{ width:18px; height:18px; fill: rgba(238,242,255,0.75); }
+    .step.active svg{ fill: white; }
+
+    .step .content{ flex:1; }
+    .step .title{ font-weight:950; font-size:13px; }
+    .step .desc{ font-size:12px; color:var(--muted); margin-top:3px; line-height:1.4; }
+
+    .kv{
+      display:grid;
+      gap:8px;
+      margin-top:4px;
+    }
+    .kv .infoBox{ margin-top:0; }
+
+    /* Responsive */
+    @media (max-width: 980px){
+      body{ padding:18px; }
+      .layout{ grid-template-columns: 1fr; }
+      .dashboardActions{ grid-template-columns: 1fr 1fr; }
+    }
+  </style>
 </head>
+
 <body>
-
   <div class="app">
-    <header class="topbar">
-      <div>
-        <h1>Small Banking Application</h1>
-        <p class="muted">Modern ATM UI (HTML + CSS)</p>
+
+    <!-- NAVBAR -->
+    <div class="topbar">
+      <div class="brand">
+        <div class="logo" aria-label="SecureBank Logo">
+          <!-- Simple Bank icon -->
+          <svg viewBox="0 0 24 24">
+            <path d="M12 3 2 9v2h20V9L12 3zm-7 8v9h2v-9H5zm4 0v9h2v-9H9zm4 0v9h2v-9h-2zm4 0v9h2v-9h-2zm-11 9v2h14v-2H6z"/>
+          </svg>
+        </div>
+        <div class="brandText">
+          <h1>SecureBank</h1>
+          <p>Server Portal • Account Onboarding & ATM Operations</p>
+        </div>
       </div>
-      <div class="badge">Secure PIN • 3 Attempts Lock</div>
-    </header>
 
-    <main class="grid">
-      <!-- LEFT: Account creation -->
+      <div class="topRight">
+        <div class="chip"><span class="dot"></span> Server Online</div>
+        <div class="chip">Secure PIN • 3 Attempts Lock</div>
+      </div>
+    </div>
+
+    <div class="layout">
+
+      <!-- MAIN -->
       <section class="card">
-        <h2>Create Account</h2>
+        <div class="panelHeader">
+          <div>
+            <h2>Banking Server Console</h2>
+            <p>Create user account, set PIN, login and operate deposit/withdraw/balance in a secure flow.</p>
+          </div>
+          <div class="badge">SSL Encrypted Session</div>
+        </div>
 
-        <label>Account Holder Name</label>
-        <input id="nameInput" type="text" placeholder="Enter your name" />
+        <div class="pages">
 
-        <button id="nextBtn" class="btn primary">Next → Generate Account No</button>
+          <!-- PAGE 1 -->
+          <div class="page active" id="page1">
+            <div class="screenTitle">Step 1 — Account Holder Verification</div>
+            <div class="screenHint">Enter account holder name to initialize onboarding process.</div>
 
-        <div class="info">
-          <div class="row">
-            <span class="muted">Account Number:</span>
-            <span id="accNoText" class="mono">-</span>
+            <label>Account Holder Name</label>
+            <input id="nameInput" type="text" placeholder="e.g., Humer Shaik" />
+
+            <div class="row">
+              <button class="btn primary" id="nextToAcc">Continue</button>
+            </div>
+
+            <div class="msg" id="msg1"></div>
+          </div>
+
+          <!-- PAGE 2 -->
+          <div class="page" id="page2">
+            <div class="screenTitle">Step 2 — Create Account & Secure PIN</div>
+            <div class="screenHint">Account number is generated from the SecureBank server. Create a 4-digit PIN.</div>
+
+            <div class="infoBox">
+              <div class="muted">Generated Account Number</div>
+              <div class="mono" id="accNoText">SB--------</div>
+            </div>
+
+            <label>Create PIN (4 digits)</label>
+            <input id="pinInput" type="password" maxlength="4" inputmode="numeric" placeholder="****" />
+
+            <label>Confirm PIN</label>
+            <input id="pinConfirmInput" type="password" maxlength="4" inputmode="numeric" placeholder="****" />
+
+            <div class="row">
+              <button class="btn ghost" id="backToName">Back</button>
+              <button class="btn primary" id="createAccount">Create Account</button>
+            </div>
+
+            <div class="msg" id="msg2"></div>
+          </div>
+
+          <!-- PAGE 3 -->
+          <div class="page" id="page3">
+            <div class="screenTitle">Step 3 — ATM Login Gateway</div>
+            <div class="screenHint">Enter name → account number auto-fills → enter PIN to start session.</div>
+
+            <label>Account Holder Name</label>
+            <input id="loginNameInput" type="text" placeholder="Enter your name" />
+
+            <label>Account Number (Auto-filled)</label>
+            <input id="loginAccNoInput" class="mono" type="text" placeholder="Auto filled" disabled />
+
+            <label>Enter PIN</label>
+            <input id="loginPinInput" type="password" maxlength="4" inputmode="numeric" placeholder="****" />
+
+            <div class="row">
+              <button class="btn ghost" id="backToPin">Back</button>
+              <button class="btn primary" id="loginBtn">Login</button>
+            </div>
+
+            <div class="msg" id="msg3"></div>
+          </div>
+
+          <!-- PAGE 4 -->
+          <div class="page" id="page4">
+            <div class="screenTitle">ATM Operator Dashboard</div>
+            <div class="screenHint">Perform account operations with server-side validations (simulated).</div>
+
+            <div class="dashboardActions">
+              <button class="btn primary" id="balanceBtn">Balance</button>
+              <button class="btn" id="depositBtn">Deposit</button>
+              <button class="btn" id="withdrawBtn">Withdraw</button>
+              <button class="btn danger" id="logoutBtn">Logout</button>
+            </div>
+
+            <div class="screen" id="screen">Welcome! Please login to use ATM services.</div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- SIDEBAR -->
+      <aside class="card sidebar">
+        <div class="stepsTitle">Onboarding Progress</div>
+
+        <div class="step active" id="s1">
+          <div class="icon">
+            <svg viewBox="0 0 24 24"><path d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4zm0 2c-4 0-8 2-8 5v1h16v-1c0-3-4-5-8-5z"/></svg>
+          </div>
+          <div class="content">
+            <div class="title">1) Holder Name</div>
+            <div class="desc">Initialize account onboarding session.</div>
           </div>
         </div>
 
-        <div class="pinBlock">
-          <label>Create PIN (4 digits)</label>
-          <input id="pinInput" type="password" maxlength="4" placeholder="****" />
-
-          <label>Confirm PIN</label>
-          <input id="pinConfirmInput" type="password" maxlength="4" placeholder="****" />
-
-          <button id="createAccountBtn" class="btn">Create Account</button>
+        <div class="step" id="s2">
+          <div class="icon">
+            <svg viewBox="0 0 24 24"><path d="M3 5h18v14H3V5zm2 2v2h14V7H5zm0 4v6h6v-6H5z"/></svg>
+          </div>
+          <div class="content">
+            <div class="title">2) Account + PIN</div>
+            <div class="desc">Generate account number and set secure PIN.</div>
+          </div>
         </div>
 
-        <p id="createMsg" class="msg"></p>
-      </section>
-
-      <!-- RIGHT: Login + ATM -->
-      <section class="card">
-        <h2>ATM Login</h2>
-
-        <label>Account Holder Name</label>
-        <input id="loginNameInput" type="text" placeholder="Enter your name" />
-
-        <label>Account Number (Auto-filled)</label>
-        <input id="loginAccNoInput" type="text" class="mono" disabled placeholder="Auto-filled" />
-
-        <label>Enter PIN</label>
-        <input id="loginPinInput" type="password" maxlength="4" placeholder="****" />
-
-        <button id="loginBtn" class="btn primary">Login</button>
-
-        <p id="loginMsg" class="msg"></p>
-
-        <hr class="hr" />
-
-        <h2>ATM Dashboard</h2>
-        <div class="atmActions">
-          <button id="balanceBtn" class="btn small" disabled>Balance</button>
-          <button id="depositBtn" class="btn small" disabled>Deposit</button>
-          <button id="withdrawBtn" class="btn small" disabled>Withdraw</button>
-          <button id="logoutBtn" class="btn small danger" disabled>Logout</button>
+        <div class="step" id="s3">
+          <div class="icon">
+            <svg viewBox="0 0 24 24"><path d="M12 1a5 5 0 0 0-5 5v3H5v14h14V9h-2V6a5 5 0 0 0-5-5zm-3 8V6a3 3 0 0 1 6 0v3H9z"/></svg>
+          </div>
+          <div class="content">
+            <div class="title">3) Login</div>
+            <div class="desc">3-attempt lock protection enabled.</div>
+          </div>
         </div>
 
-        <pre id="screen" class="screen">Welcome! Please login to use ATM.</pre>
-      </section>
-    </main>
+        <div class="step" id="s4">
+          <div class="icon">
+            <svg viewBox="0 0 24 24"><path d="M4 4h16v16H4V4zm3 4h10v2H7V8zm0 4h10v2H7v-2z"/></svg>
+          </div>
+          <div class="content">
+            <div class="title">4) Dashboard</div>
+            <div class="desc">Balance, deposit and withdraw operations.</div>
+          </div>
+        </div>
+
+        <div class="kv">
+          <div class="infoBox">
+            <div class="muted">Session Status</div>
+            <div id="statusText" class="mono">NOT LOGGED IN</div>
+          </div>
+
+          <div class="infoBox">
+            <div class="muted">Balance</div>
+            <div id="balanceText" class="mono">Rs 5000</div>
+          </div>
+        </div>
+      </aside>
+
+    </div>
   </div>
 
-  <script src="script.js"></script>
+  <script>
+    const $ = (id) => document.getElementById(id);
+
+    // Stored data (simulating backend)
+    let storedName = "";
+    let storedAcc = "";
+    let storedPin = "";
+    let balance = 5000;
+
+    let attempts = 0;
+    let locked = false;
+    let loggedIn = false;
+
+    function randomAccNo(){
+      return "SB" + Math.floor(10000000 + Math.random() * 90000000);
+    }
+
+    function goTo(step){
+      ["page1","page2","page3","page4"].forEach((p,i)=>{
+        $(p).classList.toggle("active", (i+1) === step);
+      });
+
+      ["s1","s2","s3","s4"].forEach((s,i)=>{
+        $(s).classList.toggle("active", (i+1) === step);
+      });
+    }
+
+    function setMsg(id, text, type=""){
+      const el = $(id);
+      el.textContent = text;
+      el.className = "msg " + (type || "");
+    }
+
+    function updateSide(){
+      $("balanceText").textContent = "Rs " + balance;
+      $("statusText").textContent = loggedIn ? "LOGGED IN" : "NOT LOGGED IN";
+    }
+
+    // Step 1
+    $("nextToAcc").addEventListener("click", ()=>{
+      const name = $("nameInput").value.trim();
+      if(!name){
+        setMsg("msg1","Enter your name first.","bad");
+        return;
+      }
+
+      storedName = name;
+      storedAcc = randomAccNo();
+
+      $("accNoText").textContent = storedAcc;
+      setMsg("msg1","", "");
+      goTo(2);
+    });
+
+    // Step 2
+    $("backToName").addEventListener("click", ()=> goTo(1));
+
+    $("createAccount").addEventListener("click", ()=>{
+      const pin = $("pinInput").value.trim();
+      const confirm = $("pinConfirmInput").value.trim();
+
+      if(!/^[0-9]{4}$/.test(pin)){
+        setMsg("msg2","PIN must be exactly 4 digits.","bad");
+        return;
+      }
+      if(pin !== confirm){
+        setMsg("msg2","PIN mismatch. Try again.","bad");
+        return;
+      }
+
+      storedPin = pin;
+      attempts = 0;
+      locked = false;
+
+      setMsg("msg2","Account created successfully. Proceed to login.","good");
+
+      $("loginNameInput").value = storedName;
+      $("loginAccNoInput").value = storedAcc;
+
+      setTimeout(()=> goTo(3), 650);
+    });
+
+    // Step 3
+    $("backToPin").addEventListener("click", ()=> goTo(2));
+
+    $("loginNameInput").addEventListener("input", ()=>{
+      const name = $("loginNameInput").value.trim();
+      if(name.toLowerCase() === storedName.toLowerCase()){
+        $("loginAccNoInput").value = storedAcc;
+      } else {
+        $("loginAccNoInput").value = "";
+      }
+    });
+
+    $("loginBtn").addEventListener("click", ()=>{
+      if(locked){
+        setMsg("msg3","Account locked due to 3 wrong attempts.","bad");
+        return;
+      }
+
+      const name = $("loginNameInput").value.trim();
+      const pin = $("loginPinInput").value.trim();
+
+      if(name.toLowerCase() !== storedName.toLowerCase()){
+        setMsg("msg3","Account not found. Use correct name.","bad");
+        return;
+      }
+
+      if(pin !== storedPin){
+        attempts++;
+        const left = 3 - attempts;
+
+        if(left <= 0){
+          locked = true;
+          setMsg("msg3","Account locked. Too many wrong attempts.","bad");
+        } else {
+          setMsg("msg3",`Wrong PIN. Attempts left: ${left}`,"bad");
+        }
+        return;
+      }
+
+      loggedIn = true;
+      updateSide();
+      setMsg("msg3","Login successful. Redirecting...","good");
+
+      $("screen").textContent =
+`SECUREBANK SERVER SESSION ESTABLISHED ✅
+
+Welcome ${storedName}
+Account : ${storedAcc}
+
+Select any ATM operation above.`;
+
+      setTimeout(()=> goTo(4), 550);
+    });
+
+    // Dashboard
+    $("balanceBtn").addEventListener("click", ()=>{
+      if(!loggedIn) return;
+      $("screen").textContent =
+`ACCOUNT DETAILS
+-------------------------
+Name     : ${storedName}
+Account  : ${storedAcc}
+Balance  : Rs ${balance}`;
+    });
+
+    $("depositBtn").addEventListener("click", ()=>{
+      if(!loggedIn) return;
+      const input = prompt("Enter deposit amount (Rs):");
+      if(input === null) return;
+
+      const amt = parseInt(input.trim(), 10);
+      if(isNaN(amt) || amt <= 0){
+        $("screen").textContent = "Invalid deposit amount.";
+        return;
+      }
+
+      balance += amt;
+      updateSide();
+      $("screen").textContent =
+`SERVER TXN: CREDIT ✅
+Amount     : Rs ${amt}
+New Balance: Rs ${balance}`;
+    });
+
+    $("withdrawBtn").addEventListener("click", ()=>{
+      if(!loggedIn) return;
+      const input = prompt("Enter withdraw amount (Rs):");
+      if(input === null) return;
+
+      const amt = parseInt(input.trim(), 10);
+      if(isNaN(amt) || amt <= 0){
+        $("screen").textContent = "Invalid withdrawal amount.";
+        return;
+      }
+
+      if(amt > balance){
+        $("screen").textContent = "Insufficient balance.";
+        return;
+      }
+
+      balance -= amt;
+      updateSide();
+      $("screen").textContent =
+`SERVER TXN: DEBIT ✅
+Amount     : Rs ${amt}
+New Balance: Rs ${balance}`;
+    });
+
+    $("logoutBtn").addEventListener("click", ()=>{
+      loggedIn = false;
+      updateSide();
+      $("loginPinInput").value = "";
+      setMsg("msg3","", "");
+      $("screen").textContent = "Logged out. Please login to use ATM services.";
+      goTo(3);
+    });
+
+    updateSide();
+  </script>
 </body>
 </html>

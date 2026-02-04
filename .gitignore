@@ -1,0 +1,14 @@
+# Java
+*.class
+*.log
+
+# Mac
+.DS_Store
+
+# VS Code
+.vscode/
+
+# Build folders
+bin/
+out/
+target/

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Small Banking Application</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div class="app">
+    <header class="topbar">
+      <div>
+        <h1>Small Banking Application</h1>
+        <p class="muted">Modern ATM UI (HTML + CSS)</p>
+      </div>
+      <div class="badge">Secure PIN • 3 Attempts Lock</div>
+    </header>
+
+    <main class="grid">
+      <!-- LEFT: Account creation -->
+      <section class="card">
+        <h2>Create Account</h2>
+
+        <label>Account Holder Name</label>
+        <input id="nameInput" type="text" placeholder="Enter your name" />
+
+        <button id="nextBtn" class="btn primary">Next → Generate Account No</button>
+
+        <div class="info">
+          <div class="row">
+            <span class="muted">Account Number:</span>
+            <span id="accNoText" class="mono">-</span>
+          </div>
+        </div>
+
+        <div class="pinBlock">
+          <label>Create PIN (4 digits)</label>
+          <input id="pinInput" type="password" maxlength="4" placeholder="****" />
+
+          <label>Confirm PIN</label>
+          <input id="pinConfirmInput" type="password" maxlength="4" placeholder="****" />
+
+          <button id="createAccountBtn" class="btn">Create Account</button>
+        </div>
+
+        <p id="createMsg" class="msg"></p>
+      </section>
+
+      <!-- RIGHT: Login + ATM -->
+      <section class="card">
+        <h2>ATM Login</h2>
+
+        <label>Account Holder Name</label>
+        <input id="loginNameInput" type="text" placeholder="Enter your name" />
+
+        <label>Account Number (Auto-filled)</label>
+        <input id="loginAccNoInput" type="text" class="mono" disabled placeholder="Auto-filled" />
+
+        <label>Enter PIN</label>
+        <input id="loginPinInput" type="password" maxlength="4" placeholder="****" />
+
+        <button id="loginBtn" class="btn primary">Login</button>
+
+        <p id="loginMsg" class="msg"></p>
+
+        <hr class="hr" />
+
+        <h2>ATM Dashboard</h2>
+        <div class="atmActions">
+          <button id="balanceBtn" class="btn small" disabled>Balance</button>
+          <button id="depositBtn" class="btn small" disabled>Deposit</button>
+          <button id="withdrawBtn" class="btn small" disabled>Withdraw</button>
+          <button id="logoutBtn" class="btn small danger" disabled>Logout</button>
+        </div>
+
+        <pre id="screen" class="screen">Welcome! Please login to use ATM.</pre>
+      </section>
+    </main>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
